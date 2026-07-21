@@ -2,16 +2,7 @@
 
 ## Project Summary
 
-In this project you will build and explain a small music recommender system.
-
-Your goal is to:
-
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
+This project builds a simple content-based music recommendation system. Each song has features such as genre, mood, energy, valence, and danceability. The recommender compares these features with a user's taste profile and assigns each song a score. Songs with the highest scores are recommended to the user. This project demonstrates how recommendation systems can use data and scoring rules to personalize suggestions.
 
 ---
 
@@ -28,6 +19,48 @@ Some prompts to answer:
 - How do you choose which songs to recommend
 
 You can include a simple diagram or bullet list if helpful.
+This recommender uses a content-based filtering approach. Instead of comparing users with one another, it compares each song's features with the user's preferences.
+
+### Song Features
+
+Each song contains:
+
+- Genre
+- Mood
+- Energy
+- Valence
+- Danceability
+
+### User Profile
+
+The user profile stores:
+
+- Favorite genre
+- Favorite mood
+- Target energy
+- Target valence
+- Target danceability
+
+### Scoring Rule
+
+Each song starts with a score of 0.
+
+- Genre match = +2 points
+- Mood match = +1 point
+- Energy similarity = up to +2 points
+- Valence similarity = up to +1 point
+- Danceability similarity = up to +1 point
+
+The songs are then sorted from the highest score to the lowest score. The recommender returns the top five songs with the highest scores.
+
+### Recommendation Process
+
+1. Load all songs from `data/songs.csv`.
+2. Create a user profile with preferred genre, mood, energy, valence, and danceability.
+3. Compare every song with the user profile.
+4. Calculate a score for each song.
+5. Sort the songs from highest score to lowest score.
+6. Return the top five songs.
 
 ---
 
@@ -41,6 +74,8 @@ You can include a simple diagram or bullet list if helpful.
    python -m venv .venv
    source .venv/bin/activate      # Mac or Linux
    .venv\Scripts\activate         # Windows
+
+   ```
 
 2. Install dependencies
 
@@ -79,7 +114,7 @@ Paste a sample of your recommender's output here as a text block so a reader can
 #   3. ...
 ```
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
+**Screenshot or video** _(optional)_: <!-- Insert a screenshot or demo video link here -->
 
 ---
 
@@ -95,17 +130,7 @@ Use this section to document the experiments you ran. For example:
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
-
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
-
----
+## This recommender uses a small song catalog, so its recommendations are limited. It only considers a few song features and does not understand lyrics, language, artist popularity, or a user's listening history. The scoring weights may also favor some features too strongly. For example, a genre match may receive a high score even when the song's mood or energy is not a good match. Because the dataset is small and manually created, it may not represent all genres, artists, or user preferences fairly.
 
 ## Reflection
 
@@ -117,6 +142,3 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
-
-
-
