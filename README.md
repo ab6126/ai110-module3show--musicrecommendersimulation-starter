@@ -1,16 +1,16 @@
 # 🎵 Music Recommender Simulation
 
-## Project Summary
+# Project Summary
 
-This project builds a simple content-based music recommendation system. Each song has features such as genre, mood, energy, valence, and danceability. The recommender compares these features with a user's taste profile and assigns each song a score. Songs with the highest scores are recommended to the user. This project demonstrates how recommendation systems use data and scoring rules to personalize suggestions.
+This project builds a simple content-based music recommendation system. Each song has features such as genre, mood, and energy. The recommender compares these features with a user's taste profile and assigns each song a score. Songs with the highest scores are recommended to the user. This project demonstrates how recommendation systems use data and scoring rules to personalize suggestions.
 
 ---
 
-## How The System Works
+# How The System Works
 
 This recommender uses a content-based filtering approach. Instead of comparing the behavior of different users, it compares each song's features with the current user's preferences.
 
-### Song Features
+## Song Features
 
 Each song contains the following information:
 
@@ -25,209 +25,252 @@ Each song contains the following information:
 - Danceability
 - Acousticness
 
-The first version of the scoring system will primarily use:
+The recommender currently uses these features for scoring:
 
 - Genre
 - Mood
 - Energy
-- Valence
-- Danceability
 
-### User Profile
+Additional features such as valence and danceability could be added in future versions.
 
-The recommender will compare the songs with this example taste profile:
+---
+
+## User Profile
+
+The recommender compares each song with a user's preferences.
+
+Example user profile:
 
 - Favorite genre: pop
 - Favorite mood: happy
 - Target energy: 0.80
-- Target valence: 0.85
-- Target danceability: 0.75
-
-The user profile will be represented as a dictionary:
 
 ```python
 user_prefs = {
-    "favorite_genre": "pop",
-    "favorite_mood": "happy",
-    "target_energy": 0.80,
-    "target_valence": 0.85,
-    "target_danceability": 0.75
+    "genre": "pop",
+    "mood": "happy",
+    "energy": 0.80
 }
 ```
 
-This profile can distinguish between different kinds of music. For example, an intense rock song may have high energy, but it will not match the user's favorite genre or mood. A chill lofi song may also fail to match the user's pop and happy preferences. Using several features gives the recommender more information than using genre alone.
+This profile allows the recommender to distinguish between different types of music. For example, an intense rock song may have high energy but will not match the user's preferred genre. A chill lofi song may have the right energy but not the preferred mood. Using several features gives the recommender more information than using genre alone.
 
-### Algorithm Recipe
+---
+
+## Algorithm Recipe
 
 Every song begins with a score of 0.
 
-1. Add 2.0 points if the song's genre matches the user's favorite genre.
-2. Add 1.0 point if the song's mood matches the user's favorite mood.
-3. Add up to 2.0 points based on how closely the song's energy matches the user's target energy.
-4. Add up to 1.0 point based on how closely the song's valence matches the user's target valence.
-5. Add up to 1.0 point based on how closely the song's danceability matches the user's target danceability.
-6. Save the song's final score and the reasons it received those points.
-7. Sort all songs from highest score to lowest score.
-8. Return the top five songs.
+1. Add **2.0 points** if the song's genre matches the user's preferred genre.
+2. Add **1.0 point** if the song's mood matches the user's preferred mood.
+3. Add up to **2.0 points** based on how closely the song's energy matches the user's preferred energy.
+4. Save the song's final score and the reasons it received those points.
+5. Sort all songs from highest score to lowest score.
+6. Return the top five songs.
 
-### Numerical Similarity
+---
 
-For numerical features, similarity is calculated using this formula:
+## Numerical Similarity
+
+For the energy feature, similarity is calculated as:
 
 ```python
-similarity = 1 - abs(song_value - target_value)
+energy_score = 2 - abs(song_energy - target_energy) * 2
 ```
 
-For example, if the user's target energy is `0.80` and a song's energy is `0.75`, the similarity is:
+For example, if the user's target energy is **0.80** and a song's energy is **0.75**, then:
 
 ```text
-1 - |0.75 - 0.80| = 0.95
+Energy score = 2 - |0.75 - 0.80| × 2
+             = 1.90
 ```
 
-Because energy has a weight of 2.0, the song earns:
+---
 
-```text
-0.95 × 2.0 = 1.90 energy points
-```
+## Example Score
 
-### Example Score
-
-Suppose a song has these features:
+Suppose a song has:
 
 - Genre: pop
 - Mood: happy
 - Energy: 0.75
-- Valence: 0.80
-- Danceability: 0.70
 
-Using the example user profile, the song receives:
+The score becomes:
 
-- Genre match: `+2.00`
-- Mood match: `+1.00`
-- Energy similarity: `+1.90`
-- Valence similarity: `+0.95`
-- Danceability similarity: `+0.95`
+- Genre match: +2.00
+- Mood match: +1.00
+- Energy similarity: +1.90
 
-The final score is:
+Final score:
 
 ```text
-2.00 + 1.00 + 1.90 + 0.95 + 0.95 = 6.80
+2.00 + 1.00 + 1.90 = 4.90
 ```
 
-The scoring rule evaluates one individual song and produces a numeric score. The ranking rule evaluates all songs, sorts them by score, and selects the top results. Both rules are necessary because scoring a song does not automatically determine which songs should be recommended first.
+Each song is scored individually. After every song receives a score, the recommender sorts the songs from highest to lowest score and returns the top recommendations.
 
-### Recommendation Process
+---
+
+## Recommendation Process
 
 ```text
-User preferences
+User Preferences
         ↓
 Load songs from data/songs.csv
         ↓
-Compare one song with the user profile
+Compare each song with the user profile
         ↓
-Calculate its score and reasons
+Calculate score and explanation
         ↓
 Repeat for every song
         ↓
-Sort songs from highest score to lowest score
+Sort songs by score
         ↓
 Return the top five recommendations
 ```
 
-### Potential Bias in the Design
+---
 
-This recommender may over-prioritize genre because genre receives 2.0 points. A song from another genre might closely match the user's mood, energy, valence, and danceability but still rank below a genre match. The feature weights may need to be adjusted after testing the recommendations.
+## Potential Bias in the Design
+
+The recommender gives genre the highest weight (2.0 points). Because of this, songs from the preferred genre may rank above songs from other genres even if they have a better mood or energy match. Since the dataset is relatively small, recommendations may not represent every music preference equally.
 
 ---
 
-## Getting Started
+# Getting Started
 
-### Setup
+## Setup
 
-1. Create a virtual environment. This is optional but recommended.
-
-   ```bash
-   python -m venv .venv
-   ```
-
-2. Activate the virtual environment.
-
-   On Mac or Linux:
-
-   ```bash
-   source .venv/bin/activate
-   ```
-
-   On Windows:
-
-   ```bash
-   .venv\Scripts\activate
-   ```
-
-3. Install the dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the application:
-
-   ```bash
-   python -m src.main
-   ```
-
-### Running Tests
-
-Run the tests with:
+1. Create a virtual environment (optional):
 
 ```bash
-pytest
+python -m venv .venv
 ```
 
-Additional tests can be added to `tests/test_recommender.py`.
+2. Activate it.
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Run the recommender:
+
+```bash
+python -m src.main
+```
 
 ---
 
-## Sample Recommendation Output
+## Running Tests
 
-This section will be completed after the recommender has been implemented and run.
+```bash
+python -m pytest
+```
+
+---
+
+# Sample Recommendation Output
+
+Example output for the **High-Energy Pop** profile:
 
 ```text
-User profile: Not tested yet
-
-Recommendations:
-1. To be added after implementation
-2. To be added after implementation
-3. To be added after implementation
++------------------------+---------+------------------------------------------------------------------------+
+| Song                   | Score   | Reasons                                                                |
++------------------------+---------+------------------------------------------------------------------------+
+| Sunrise City           | 4.96    | genre match (+2.00), mood match (+1.00), energy similarity (+1.96)     |
+| Gym Hero               | 3.74    | genre match (+2.00), energy similarity (+1.74)                         |
+| Rooftop Lights         | 2.92    | mood match (+1.00), energy similarity (+1.92)                          |
+| Weekend Lights         | 2.76    | mood match (+1.00), energy similarity (+1.76)                          |
+| Night Drive Loop       | 1.90    | energy similarity (+1.90)                                              |
++------------------------+---------+------------------------------------------------------------------------+
 ```
 
-**Screenshot or video:** Optional
+---
+
+# Experiments You Tried
+
+I tested the recommender using three different user profiles:
+
+- High-Energy Pop
+- Chill Lofi
+- Intense Rock
+
+## High-Energy Pop
+
+```text
+Sunrise City - Score: 4.96
+Gym Hero - Score: 3.74
+Rooftop Lights - Score: 2.92
+Weekend Lights - Score: 2.76
+Night Drive Loop - Score: 1.90
+```
+
+`Sunrise City` ranked first because it matched the user's preferred genre, mood, and energy.
+
+## Chill Lofi
+
+```text
+Library Rain - Score: 5.00
+Midnight Coding - Score: 4.86
+Focus Flow - Score: 3.90
+Spacewalk Thoughts - Score: 2.86
+Coffee Shop Stories - Score: 1.96
+```
+
+`Library Rain` ranked first because it matched the lofi genre, chill mood, and target energy.
+
+## Intense Rock
+
+```text
+Storm Runner - Score: 4.98
+Gym Hero - Score: 2.94
+Electric Pulse - Score: 1.98
+Weekend Lights - Score: 1.96
+Fast Lane - Score: 1.92
+```
+
+`Storm Runner` ranked first because it matched the rock genre, intense mood, and high-energy preference.
+
+The recommendations changed clearly across the three profiles, showing that the recommender responds appropriately to different user preferences.
 
 ---
 
-## Experiments You Tried
+# Limitations and Risks
 
-This section will be completed after the recommender is implemented. Planned experiments include:
+The recommender uses a relatively small song catalog, so recommendations are limited. It only considers genre, mood, and energy. It does not consider lyrics, artist popularity, release year, or listening history.
 
-- Changing the genre weight from 2.0 to 0.5
-- Comparing results with and without valence
-- Comparing results for pop, rock, and lofi user profiles
-- Testing different target energy values
+Because the dataset is manually created, it may not represent every music genre or user preference fairly. Musical taste is also dynamic, but the recommender assumes users have fixed preferences.
 
 ---
 
-## Limitations and Risks
+# Reflection
 
-This recommender uses a small song catalog, so its recommendations are limited. It only considers a few song features and does not understand lyrics, language, artist popularity, or a user's listening history. The scoring weights may also favor some features too strongly. For example, a genre match may receive a high score even when the song's mood or energy is not a good match.
+See the completed **Model Card** for a detailed discussion of the recommender's design, evaluation, strengths, limitations, future improvements, and personal reflection.
 
-Because the dataset is small and manually created, it may not represent all genres, artists, cultures, or user preferences fairly. The system also assumes that a person's preferences can be represented by fixed target values, even though musical taste may change depending on activity, location, or mood.
+**Model Card:** `model_card.md`
 
 ---
 
-## Reflection
+# Optional Extension: Visual Summary Table
 
-Read and complete `model_card.md`:
+I completed the **Visual Summary Table** challenge by improving the command-line output. Recommendations are displayed in a formatted ASCII table showing:
 
-[**Model Card**](model_card.md)
+- Song title
+- Recommendation score
+- Explanation of the score
 
-This section will be completed after the implementation and testing phases. The final reflection will explain what I learned about how recommendation systems turn data into predictions and where bias or unfairness may appear.
+I implemented this using Python string formatting without external libraries. I tested the feature with the High-Energy Pop, Chill Lofi, and Intense Rock user profiles, and all automated tests continued to pass successfully.
